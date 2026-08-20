@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+  <defs>
+    <filter id="fnear" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.0034 0.0082" numOctaves="6" seed="47" result="n"/>
+      <feColorMatrix in="n" type="matrix" result="gray"
+        values="0 0 0 0 1
+                0 0 0 0 1
+                0 0 0 0 1
+                1 0 0 0 0"/>
+      <feComponentTransfer in="gray" result="shaped">
+        <feFuncA type="table" tableValues="0 0 0.02 0.26 0.72 1"/>
+      </feComponentTransfer>
+      <feGaussianBlur in="shaped" stdDeviation="3"/>
+    </filter>
+  </defs>
+  <rect width="1600" height="900" filter="url(#fnear)"/>
+</svg>

@@ -1,0 +1,20 @@
+---
+import { Image } from 'astro:assets';
+import { about } from '../data/site';
+---
+
+<div class="flex flex-col items-center px-6 text-center">
+	<p class="max-w-[46ch] text-[1.05rem] leading-[1.7] text-balance text-graphite-700">
+		{about.text}
+	</p>
+
+	<Image
+		src={about.logo}
+		alt={about.logoAlt}
+		width={169}
+		height={209}
+		loading="lazy"
+		class="float mt-14 h-[84px] w-auto"
+		style="--float-dur: 8s; --float-dist: 7px; --float-delay: 0.9s;"
+	/>
+</div>

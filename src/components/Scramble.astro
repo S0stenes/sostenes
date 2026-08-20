@@ -1,0 +1,38 @@
+---
+/**
+ * Scramble — ao passar o mouse (ou focar), o texto vira ruído e se
+ * "decodifica" da esquerda para a direita.
+ *
+ *   <Scramble text="Core: HTML5, CSS3" class="..." as="span" />
+ *
+ * Detalhes que importam:
+ * - o texto real fica no DOM (data-scramble-text), então leitores de tela,
+ *   busca e "copiar" continuam vendo o conteúdo correto;
+ * - a largura é travada no primeiro hover, senão a linha pula enquanto
+ *   os caracteres trocam (a fonte é serifada, não monoespaçada);
+ * - espaços nunca são embaralhados — as palavras continuam legíveis como blocos.
+ */
+
+interface Props {
+	text: string;
+	/** tag a renderizar */
+	as?: 'span' | 'h2' | 'h3' | 'p';
+	class?: string;
+	/** ms por caractere revelado — menor = mais rápido */
+	speed?: number;
+}
+
+const { text, as: Tag = 'span', class: className, speed = 26 } = Astro.props;
+---
+
+<Tag class:list={['scramble', className]} data-scramble data-scramble-speed={speed}>
+	{text}
+</Tag>
+
+<style>
+	.scramble {
+		cursor: default;
+		/* evita reflow da linha inteira enquanto os caracteres trocam */
+		display: inline-block;
+	}
+</style>

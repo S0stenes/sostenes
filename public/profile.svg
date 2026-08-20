@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#dfe4ec"/>
+  <g fill="none" stroke="#9aa3b0" stroke-width="2" stroke-dasharray="10 8">
+    <rect x="14" y="14" width="372" height="372" rx="18"/>
+  </g>
+  <text x="50%" y="48%" text-anchor="middle" font-family="Georgia, serif" font-size="30" fill="#9aa3b0">foto</text>
+  <text x="50%" y="58%" text-anchor="middle" font-family="Georgia, serif" font-size="17" fill="#9aa3b0">substituir pelo export do Figma</text>
+</svg>

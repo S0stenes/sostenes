@@ -1,0 +1,93 @@
+---
+/**
+ * CloudField — campo de nuvens fixo atrás de todo o site.
+ * Três camadas deslocam em velocidades diferentes conforme o scroll (parallax).
+ * A camada mais distante quase não se move; a mais próxima acompanha o scroll.
+ */
+---
+
+<div class="cloudfield" aria-hidden="true" data-cloudfield>
+	<img src="/clouds/far.svg" alt="" class="cloudfield__layer cloudfield__layer--far" />
+	<img src="/clouds/mid.svg" alt="" class="cloudfield__layer cloudfield__layer--mid" />
+	<img src="/clouds/near.svg" alt="" class="cloudfield__layer cloudfield__layer--near" />
+</div>
+
+<style>
+	.cloudfield {
+		position: fixed;
+		inset: 0;
+		z-index: 0;
+		overflow: hidden;
+		pointer-events: none;
+		--y: 0px;
+	}
+
+	.cloudfield__layer {
+		position: absolute;
+		left: -22%;
+		width: 144%;
+		height: 190vh;
+		object-fit: cover;
+		will-change: transform;
+		/* dissolve nos quatro lados: nenhuma borda do SVG chega a aparecer */
+		-webkit-mask-image:
+			linear-gradient(180deg, transparent 0%, #000 18%, #000 82%, transparent 100%),
+			linear-gradient(90deg, transparent 0%, #000 14%, #000 86%, transparent 100%);
+		mask-image:
+			linear-gradient(180deg, transparent 0%, #000 18%, #000 82%, transparent 100%),
+			linear-gradient(90deg, transparent 0%, #000 14%, #000 86%, transparent 100%);
+		-webkit-mask-composite: source-in;
+		mask-composite: intersect;
+	}
+
+	/* cada camada nasce numa altura diferente e responde ao scroll com outro fator */
+	.cloudfield__layer--far {
+		top: -55vh;
+		opacity: 0.85;
+		transform: translate3d(0, calc(var(--y) * 0.06), 0) scale(1.06);
+	}
+
+	.cloudfield__layer--mid {
+		top: -20vh;
+		opacity: 0.9;
+		transform: translate3d(0, calc(var(--y) * 0.14), 0);
+	}
+
+	.cloudfield__layer--near {
+		top: 5vh;
+		opacity: 0.95;
+		transform: translate3d(0, calc(var(--y) * 0.26), 0) scale(1.1);
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.cloudfield__layer {
+			transform: none !important;
+		}
+	}
+</style>
+
+<script>
+	function initCloudField() {
+		const field = document.querySelector<HTMLElement>('[data-cloudfield]');
+		if (!field) return;
+		if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+		let ticking = false;
+		const update = () => {
+			ticking = false;
+			// negativo: as nuvens sobem enquanto a página desce
+			field.style.setProperty('--y', `${-window.scrollY}px`);
+		};
+		const onScroll = () => {
+			if (ticking) return;
+			ticking = true;
+			requestAnimationFrame(update);
+		};
+
+		window.addEventListener('scroll', onScroll, { passive: true });
+		update();
+	}
+
+	initCloudField();
+	document.addEventListener('astro:after-swap', initCloudField);
+</script>

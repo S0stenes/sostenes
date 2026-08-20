@@ -1,0 +1,57 @@
+---
+/**
+ * Inclina os cartões [data-tilt] seguindo o cursor, como um cartão físico
+ * que você gira na mão. Volta ao normal quando o mouse sai.
+ */
+---
+
+<script>
+	function initTilt() {
+		const cartoes = document.querySelectorAll<HTMLElement>('[data-tilt]');
+		if (!cartoes.length) return;
+
+		// num aparelho de toque não há cursor para seguir
+		const semHover = !window.matchMedia('(hover: hover)').matches;
+		if (semHover || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+		for (const cartao of cartoes) {
+			const max = Number(cartao.dataset.tiltMax ?? 9); // graus
+			let rafId: number | null = null;
+
+			const mover = (e: MouseEvent) => {
+				if (rafId !== null) return;
+				rafId = requestAnimationFrame(() => {
+					rafId = null;
+					const r = cartao.getBoundingClientRect();
+					// -0.5 … 0.5 a partir do centro do cartão
+					const px = (e.clientX - r.left) / r.width - 0.5;
+					const py = (e.clientY - r.top) / r.height - 0.5;
+
+					cartao.style.setProperty('--rx', `${(-py * max * 2).toFixed(2)}deg`);
+					cartao.style.setProperty('--ry', `${(px * max * 2).toFixed(2)}deg`);
+					// o brilho acompanha o cursor, reforçando a ideia de superfície
+					cartao.style.setProperty('--gx', `${(px * 100 + 50).toFixed(1)}%`);
+					cartao.style.setProperty('--gy', `${(py * 100 + 50).toFixed(1)}%`);
+				});
+			};
+
+			const entrar = () => cartao.classList.add('is-tilting');
+			const sair = () => {
+				if (rafId !== null) {
+					cancelAnimationFrame(rafId);
+					rafId = null;
+				}
+				cartao.classList.remove('is-tilting');
+				cartao.style.setProperty('--rx', '0deg');
+				cartao.style.setProperty('--ry', '0deg');
+			};
+
+			cartao.addEventListener('mouseenter', entrar);
+			cartao.addEventListener('mousemove', mover);
+			cartao.addEventListener('mouseleave', sair);
+		}
+	}
+
+	initTilt();
+	document.addEventListener('astro:after-swap', initTilt);
+</script>

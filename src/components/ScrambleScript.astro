@@ -1,0 +1,79 @@
+---
+/**
+ * Motor do efeito de embaralhar. Um único script para todos os
+ * elementos [data-scramble] da página.
+ */
+---
+
+<script>
+	const GLYPHS = '!<>-_\\/[]{}—=+*^?#%$&@01';
+
+	function initScramble() {
+		const nodes = document.querySelectorAll<HTMLElement>('[data-scramble]');
+		if (!nodes.length) return;
+
+		const reduzido = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+		if (reduzido) return; // texto fica estático, como já está no HTML
+
+		for (const el of nodes) {
+			const original = el.textContent ?? '';
+			const speed = Number(el.dataset.scrambleSpeed ?? 26);
+			let frame = 0;
+			let timer: number | null = null;
+			let travada = false;
+
+			const parar = () => {
+				if (timer !== null) {
+					clearInterval(timer);
+					timer = null;
+				}
+				el.textContent = original;
+			};
+
+			const rodar = () => {
+				// trava a largura na primeira vez: sem isso a linha "respira"
+				// enquanto os glifos trocam, porque a fonte não é monoespaçada
+				if (!travada) {
+					el.style.minWidth = `${el.getBoundingClientRect().width}px`;
+					travada = true;
+				}
+
+				if (timer !== null) clearInterval(timer);
+				frame = 0;
+
+				timer = window.setInterval(() => {
+					// quantos caracteres já estão resolvidos
+					const resolvidos = frame / 2;
+					let saida = '';
+
+					for (let i = 0; i < original.length; i++) {
+						const c = original[i];
+						if (c === ' ') {
+							saida += ' '; // espaços intactos: as palavras seguem legíveis
+						} else if (i < resolvidos) {
+							saida += c;
+						} else {
+							saida += GLYPHS[(Math.random() * GLYPHS.length) | 0];
+						}
+					}
+
+					el.textContent = saida;
+					frame++;
+
+					if (resolvidos >= original.length) parar();
+				}, speed);
+			};
+
+			el.addEventListener('mouseenter', rodar);
+			el.addEventListener('focus', rodar);
+			// no toque não existe hover: dispara ao encostar
+			el.addEventListener('touchstart', rodar, { passive: true });
+			// se o cursor sai no meio, o texto volta inteiro na hora
+			el.addEventListener('mouseleave', parar);
+			el.addEventListener('blur', parar);
+		}
+	}
+
+	initScramble();
+	document.addEventListener('astro:after-swap', initScramble);
+</script>

@@ -1,0 +1,41 @@
+---
+import Layout from '../layouts/Layout.astro';
+import CloudCurtain from '../components/CloudCurtain.astro';
+---
+
+<Layout title="Demo — cortina de nuvens">
+	<main class="bg-[#0b1a33]">
+		<CloudCurtain runway={250} travel={110}>
+			<div slot="front" class="px-6 text-center">
+				<p class="mb-4 text-sm tracking-widest text-[#3a5177] uppercase">
+					Desenvolvedor · Brasil
+				</p>
+				<h1
+					class="text-5xl font-semibold tracking-tight text-[#12203c] drop-shadow-sm sm:text-7xl"
+				>
+					Sóstenes<br />Santana Santos
+				</h1>
+			</div>
+
+			<div slot="behind" class="px-6 text-center">
+				<p class="mb-3 text-xs tracking-widest text-sky-300 uppercase">01 · Sobre</p>
+				<h2 class="mx-auto max-w-2xl text-3xl font-semibold text-white sm:text-5xl">
+					As nuvens abriram e a próxima seção apareceu.
+				</h2>
+			</div>
+		</CloudCurtain>
+
+		<section class="flex min-h-screen items-center justify-center bg-ink-950 px-6">
+			<p class="max-w-xl text-center text-lg text-ink-300">
+				Daqui pra frente o site segue normalmente — a cortina é só a transição de entrada.
+			</p>
+		</section>
+	</main>
+</Layout>
+
+<style>
+	/* céu do topo, atrás de tudo */
+	main {
+		background: linear-gradient(180deg, #0a1730 0%, #163568 45%, #4a7fc1 100%);
+	}
+</style>

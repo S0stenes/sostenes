@@ -1,0 +1,115 @@
+---
+import { Image } from 'astro:assets';
+import { hero } from '../data/site';
+---
+
+<div id="home" class="hero relative flex h-screen w-full items-center justify-center">
+	<!-- a montanha preenche o hero inteiro; só as bordas dissolvem nas nuvens -->
+	<Image
+		src={hero.background}
+		alt=""
+		widths={[640, 1024, 1440, 1920]}
+		sizes="100vw"
+		loading="eager"
+		fetchpriority="high"
+		class="hero__bg pointer-events-none absolute inset-0 h-full w-full object-cover"
+	/>
+
+	<!-- clareia a área do texto: a foto tem rocha escura, e o texto é grafite -->
+	<div class="hero__veil pointer-events-none absolute inset-0" aria-hidden="true"></div>
+
+	<div class="hero__content relative flex flex-col items-center px-5 text-center sm:px-6">
+		<!-- a foto flutua de leve, como se estivesse suspensa nas nuvens -->
+		<Image
+			src={hero.photo}
+			alt={hero.photoAlt}
+			width={264}
+			height={264}
+			loading="eager"
+			fetchpriority="high"
+			class="float size-[108px] rounded-full object-cover shadow-[0_10px_28px_-12px_rgb(30_40_60/0.55)] sm:size-[132px]"
+			style="--float-dur: 7s; --float-dist: 10px;"
+		/>
+
+		<p class="mt-7 text-[1.15rem] text-graphite-900 sm:mt-9 sm:text-[1.35rem]">
+			{hero.greeting}
+		</p>
+		<p class="mt-2.5 text-[1.15rem] text-balance text-graphite-900 sm:mt-3 sm:text-[1.35rem]">
+			{hero.intro}
+		</p>
+	</div>
+</div>
+
+<style>
+	/* halo branco no texto: legibilidade sobre a rocha sem precisar de véu grande */
+	.hero__content p {
+		text-shadow:
+			0 0 14px rgb(255 255 255 / 0.9),
+			0 0 32px rgb(255 255 255 / 0.7);
+	}
+
+	.hero__bg {
+		/* mostra o maciço na metade de cima e a neblina embaixo, onde fica o texto */
+		object-position: center 42%;
+		/* dissolve só nas bordas — o miolo da foto fica intacto */
+		-webkit-mask-image:
+			linear-gradient(180deg, transparent 0%, #000 9%, #000 86%, transparent 100%),
+			linear-gradient(90deg, transparent 0%, #000 7%, #000 93%, transparent 100%);
+		mask-image:
+			linear-gradient(180deg, transparent 0%, #000 9%, #000 86%, transparent 100%),
+			linear-gradient(90deg, transparent 0%, #000 7%, #000 93%, transparent 100%);
+		-webkit-mask-composite: source-in;
+		mask-composite: intersect;
+	}
+
+	/* névoa discreta: só o suficiente para o texto respirar.
+	   Um véu largo demais apaga a montanha inteira. */
+	.hero__veil {
+		background:
+			/* foco estreito na faixa do texto — leva o contraste para acima de 4.5:1 */
+			radial-gradient(
+					ellipse 30% 11% at 50% 61%,
+					rgb(255 255 255 / 0.88) 0%,
+					rgb(255 255 255 / 0.45) 58%,
+					transparent 88%
+				),
+			radial-gradient(
+				ellipse 46% 22% at 50% 60%,
+				rgb(255 255 255 / 0.45) 0%,
+				rgb(255 255 255 / 0.18) 60%,
+				transparent 82%
+			),
+			linear-gradient(180deg, transparent 74%, rgb(255 255 255 / 0.5) 92%, #fff 100%);
+	}
+
+	/* retrato estreito: o recorte pega uma faixa mais alta da foto, senão
+	   sobraria só rocha atrás do texto */
+	@media (max-width: 767px) {
+		.hero__bg {
+			object-position: center 34%;
+		}
+		.hero__veil {
+			background:
+				radial-gradient(
+						ellipse 60% 10% at 50% 61%,
+						rgb(255 255 255 / 0.9) 0%,
+						rgb(255 255 255 / 0.5) 58%,
+						transparent 90%
+					),
+				radial-gradient(
+					ellipse 85% 20% at 50% 60%,
+					rgb(255 255 255 / 0.5) 0%,
+					rgb(255 255 255 / 0.2) 60%,
+					transparent 84%
+				),
+				linear-gradient(180deg, transparent 70%, rgb(255 255 255 / 0.55) 90%, #fff 100%);
+		}
+	}
+
+	/* telas baixas e largas (notebook em paisagem) */
+	@media (min-width: 1024px) and (max-height: 720px) {
+		.hero__bg {
+			object-position: center 38%;
+		}
+	}
+</style>

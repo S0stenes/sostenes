@@ -1,38 +1,103 @@
 ---
 interface Props {
-	title: string;
+	title?: string;
+	description?: string;
+	/** caminho da imagem de prévia; precisa virar URL absoluta no OG */
+	image?: string;
 }
 
-const { title } = Astro.props;
+// fontes auto-hospedadas: sem chamada ao Google, sem FOUT de rede externa
+import '@fontsource/cormorant-garamond/300.css';
+import '@fontsource/cormorant-garamond/400.css';
+import '@fontsource/cormorant-garamond/500.css';
+import '@fontsource/cormorant-garamond/600.css';
+import '@fontsource/ibm-plex-mono/500.css';
+import '@fontsource/ibm-plex-mono/600.css';
+import '../styles/global.css';
 
-import '../styles/mavie.css';
+import { site } from '../data/site';
+
+const {
+	title = site.name,
+	description = site.description,
+	image = '/og-image.jpg',
+} = Astro.props;
+
+// Astro.site vem do astro.config.mjs; o fallback cobre o dev sem config
+const base = Astro.site ?? new URL(site.url);
+const canonical = new URL(Astro.url.pathname, base);
+const ogImage = new URL(image, base);
 ---
 
 <!doctype html>
-<html lang="pt_BR">
+<html lang="en">
 	<head>
 		<meta charset="UTF-8" />
-		<meta name="description" content="Portifólio" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/iconmark.svg" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="generator" content={Astro.generator} />
-		<link rel="stylesheet" href="input.css">
-		<title>{title}</title>
 
-		 <!-- Open Graph Meta Tags -->
-		 <meta property="og:title" content="Sóstenes Santana Santos" />
-		 <meta property="og:description" content="Portifólio" />
-		 <meta property="og:image" content="" />
-		 <meta property="og:url" content="https://www.sostenes.com.br" />
-		 <meta property="og:type" content="website" />
-		 <meta property="og:locale" content="pt_BR" />
-	 
-		 <!-- Twitter Cards (para Twitter) -->
-		 <meta name="twitter:card" content="summary_large_image" />
-		 <meta name="twitter:title" content="Sóstenes Santana Santos" />
-		 <meta name="twitter:description" content="Portifólio" />
-		 <meta name="twitter:image" content="" />
-		 <meta name="twitter:url" content="https://www.sostenes.com.br" />
+		<title>{title}</title>
+		<meta name="description" content={description} />
+		<meta name="author" content={site.name} />
+		<link rel="canonical" href={canonical} />
+
+		<link rel="icon" type="image/png" sizes="32x32" href="/icon-32.png" />
+		<link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+		<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+
+		<!-- Open Graph — usado por WhatsApp, LinkedIn, Facebook, Discord, Slack -->
+		<meta property="og:site_name" content={site.name} />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:url" content={canonical} />
+		<meta property="og:type" content="website" />
+		<meta property="og:locale" content="en_US" />
+		<meta property="og:locale:alternate" content="pt_BR" />
+		<meta property="og:image" content={ogImage} />
+		<meta property="og:image:secure_url" content={ogImage} />
+		<meta property="og:image:type" content="image/jpeg" />
+		<meta property="og:image:width" content="1200" />
+		<meta property="og:image:height" content="630" />
+		<meta
+			property="og:image:alt"
+			content="Sóstenes Santana Santos — Full-Stack Developer"
+		/>
+
+		<!-- Twitter / X -->
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:title" content={title} />
+		<meta name="twitter:description" content={description} />
+		<meta name="twitter:image" content={ogImage} />
+		<meta
+			name="twitter:image:alt"
+			content="Sóstenes Santana Santos — Full-Stack Developer"
+		/>
+		<meta name="twitter:creator" content="@S0stenesSan" />
+
+		<meta name="theme-color" content="#e9edf2" />
+
+		<!-- dados estruturados: ajuda o Google a entender de quem é o site -->
+		<script
+			type="application/ld+json"
+			set:html={JSON.stringify({
+				'@context': 'https://schema.org',
+				'@type': 'Person',
+				name: site.name,
+				url: site.url,
+				image: ogImage.href,
+				jobTitle: 'Full-Stack Developer',
+				alumniOf: {
+					'@type': 'CollegeOrUniversity',
+					name: 'Instituto Federal do Espírito Santo (IFES)',
+				},
+				sameAs: [
+					'https://github.com/S0stenes',
+					'https://x.com/S0stenesSan',
+					'https://www.instagram.com/sostenes03/',
+					'https://www.linkedin.com/in/s0stenes/',
+				],
+			})}
+		/>
 	</head>
 	<body>
 		<slot />

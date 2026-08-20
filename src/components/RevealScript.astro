@@ -1,0 +1,59 @@
+---
+/**
+ * Revela os elementos [data-reveal] conforme entram na viewport.
+ *
+ * Comportamento pedido: rolando PARA BAIXO os itens aparecem; rolando
+ * PARA CIMA eles desaparecem de novo. Ou seja, um item só se esconde
+ * quando sai pela BORDA DE BAIXO da tela — se ele sai por cima (porque
+ * você já passou por ele), continua visível.
+ */
+---
+
+<script>
+	function initReveal() {
+		const items = document.querySelectorAll<HTMLElement>('[data-reveal]');
+		if (!items.length) return;
+
+		if (
+			!('IntersectionObserver' in window) ||
+			window.matchMedia('(prefers-reduced-motion: reduce)').matches
+		) {
+			items.forEach((el) => el.classList.add('is-visible'));
+			return;
+		}
+
+		const observer = new IntersectionObserver(
+			(entries) => {
+				for (const entry of entries) {
+					const el = entry.target as HTMLElement;
+
+					if (entry.isIntersecting) {
+						el.classList.add('is-visible');
+						continue;
+					}
+
+					// saiu da tela: só escondemos se ficou ABAIXO da viewport,
+					// que é o caso de quem está rolando para cima
+					const abaixo = entry.boundingClientRect.top > 0;
+					if (abaixo) el.classList.remove('is-visible');
+				}
+			},
+			{
+				rootMargin: '0px 0px -12% 0px',
+				threshold: 0.12,
+			}
+		);
+
+		items.forEach((el) => {
+			// já visível no carregamento (topo da página): mostra sem esperar
+			const rect = el.getBoundingClientRect();
+			if (rect.top < window.innerHeight * 0.85 && rect.bottom > 0) {
+				el.classList.add('is-visible');
+			}
+			observer.observe(el);
+		});
+	}
+
+	initReveal();
+	document.addEventListener('astro:after-swap', initReveal);
+</script>

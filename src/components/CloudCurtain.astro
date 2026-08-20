@@ -1,0 +1,179 @@
+---
+/**
+ * CloudCurtain — duas massas de nuvem que abrem como cortina conforme o scroll,
+ * revelando o conteúdo que está atrás.
+ *
+ *   <CloudCurtain>
+ *     <div slot="front">fica NA FRENTE das nuvens</div>
+ *     <div slot="behind">é REVELADO quando elas abrem</div>
+ *   </CloudCurtain>
+ */
+
+interface Props {
+	/** Altura da pista de scroll, em vh. 220 = ~2 telas até abrir por completo. */
+	runway?: number;
+	/** Deslocamento de cada metade, em % da própria largura. */
+	travel?: number;
+	/** Mostrar a dica "scroll" no rodapé. */
+	hint?: boolean;
+}
+
+const { runway = 220, travel = 95, hint = true } = Astro.props;
+---
+
+<section
+	class="curtain relative z-10"
+	style={`height: ${runway}vh; --travel: ${travel}%;`}
+	data-cloud-curtain
+>
+	<div class="sticky top-0 h-screen overflow-hidden">
+		<div class="curtain__behind absolute inset-0 z-0 flex items-center justify-center">
+			<slot name="behind" />
+		</div>
+
+		<div class="curtain__front absolute inset-0 z-20 flex items-center justify-center">
+			<slot name="front" />
+		</div>
+
+		<div class="pointer-events-none absolute inset-0 z-10" aria-hidden="true">
+			<img
+				src="/clouds/curtain-left.svg"
+				alt=""
+				class="curtain__cloud curtain__cloud--left"
+				decoding="async"
+			/>
+			<img
+				src="/clouds/curtain-right.svg"
+				alt=""
+				class="curtain__cloud curtain__cloud--right"
+				decoding="async"
+			/>
+		</div>
+
+		{
+			hint && (
+				<div
+					class="curtain__hint pointer-events-none absolute inset-x-0 bottom-10 z-30 flex justify-center"
+					aria-hidden="true"
+				>
+					<span class="title-caps text-[0.75rem] text-graphite-500">scroll</span>
+				</div>
+			)
+		}
+	</div>
+</section>
+
+<style>
+	.curtain {
+		--p: 0; /* progresso 0 → 1, escrito pelo JS */
+	}
+
+	.curtain__cloud {
+		position: absolute;
+		top: -8vh;
+		height: 116vh;
+		width: 72vw;
+		max-width: none;
+		object-fit: cover;
+		will-change: transform;
+		user-select: none;
+	}
+
+	/* a dissolução vive aqui, no CSS: assim independe de como o SVG é recortado */
+	.curtain__cloud--left {
+		left: 0;
+		-webkit-mask-image:
+			linear-gradient(90deg, #000 0%, #000 46%, rgb(0 0 0 / 0.7) 74%, transparent 100%),
+			linear-gradient(180deg, transparent 0%, #000 10%, #000 90%, transparent 100%);
+		mask-image:
+			linear-gradient(90deg, #000 0%, #000 46%, rgb(0 0 0 / 0.7) 74%, transparent 100%),
+			linear-gradient(180deg, transparent 0%, #000 10%, #000 90%, transparent 100%);
+		-webkit-mask-composite: source-in;
+		mask-composite: intersect;
+		transform: translate3d(calc(var(--p) * var(--travel) * -1), calc(var(--p) * -4vh), 0)
+			scale(calc(1 + var(--p) * 0.14));
+		transform-origin: center left;
+	}
+
+	.curtain__cloud--right {
+		right: 0;
+		-webkit-mask-image:
+			linear-gradient(270deg, #000 0%, #000 46%, rgb(0 0 0 / 0.7) 74%, transparent 100%),
+			linear-gradient(180deg, transparent 0%, #000 10%, #000 90%, transparent 100%);
+		mask-image:
+			linear-gradient(270deg, #000 0%, #000 46%, rgb(0 0 0 / 0.7) 74%, transparent 100%),
+			linear-gradient(180deg, transparent 0%, #000 10%, #000 90%, transparent 100%);
+		-webkit-mask-composite: source-in;
+		mask-composite: intersect;
+		transform: translate3d(calc(var(--p) * var(--travel)), calc(var(--p) * -4vh), 0)
+			scale(calc(1 + var(--p) * 0.14));
+		transform-origin: center right;
+	}
+
+	.curtain__front {
+		transform: translate3d(0, calc(var(--p) * -10vh), 0);
+		opacity: clamp(0, calc(1 - var(--p) * 2.4), 1);
+		will-change: transform, opacity;
+	}
+
+	.curtain__behind {
+		transform: translate3d(0, calc((1 - var(--p)) * 5vh), 0);
+		opacity: clamp(0, calc(var(--p) * 2.2 - 0.6), 1);
+		will-change: transform, opacity;
+	}
+
+	.curtain__hint {
+		opacity: clamp(0, calc(1 - var(--p) * 7), 1);
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.curtain__cloud,
+		.curtain__front,
+		.curtain__behind {
+			transform: none !important;
+		}
+		.curtain__front,
+		.curtain__behind {
+			opacity: 1;
+		}
+	}
+</style>
+
+<script>
+	function initCurtains() {
+		const sections = document.querySelectorAll<HTMLElement>('[data-cloud-curtain]');
+		if (!sections.length) return;
+
+		if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+			sections.forEach((s) => s.style.setProperty('--p', '1'));
+			return;
+		}
+
+		let ticking = false;
+		const update = () => {
+			ticking = false;
+			for (const section of sections) {
+				const rect = section.getBoundingClientRect();
+				const distance = rect.height - window.innerHeight;
+				if (distance <= 0) {
+					section.style.setProperty('--p', '0');
+					continue;
+				}
+				const p = Math.min(1, Math.max(0, -rect.top / distance));
+				section.style.setProperty('--p', p.toFixed(4));
+			}
+		};
+		const onScroll = () => {
+			if (ticking) return;
+			ticking = true;
+			requestAnimationFrame(update);
+		};
+
+		window.addEventListener('scroll', onScroll, { passive: true });
+		window.addEventListener('resize', onScroll, { passive: true });
+		update();
+	}
+
+	initCurtains();
+	document.addEventListener('astro:after-swap', initCurtains);
+</script>

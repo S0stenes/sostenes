@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+  <defs>
+    <filter id="fcl" x="-10%" y="-10%" width="120%" height="120%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.0026 0.0065" numOctaves="6" seed="67" result="n"/>
+      <feColorMatrix in="n" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  1 0 0 0 0" result="g"/>
+      <feComponentTransfer in="g" result="s">
+        <feFuncA type="table" tableValues="0 0.18 0.55 0.86 1 1"/>
+      </feComponentTransfer>
+      <feGaussianBlur in="s" stdDeviation="3"/>
+    </filter>
+  </defs>
+  <rect width="1600" height="900" filter="url(#fcl)"/>
+</svg>

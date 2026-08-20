@@ -1,0 +1,91 @@
+---
+/**
+ * Motor do voo das letras. Um script para todos os [data-fly] da página.
+ *
+ * Ao passar o mouse: cada letra ganha um destino aleatório e sai voando,
+ * com um pequeno atraso escalonado para elas não partirem em bloco.
+ * Depois volta sozinha — assim o texto nunca fica ilegível de forma
+ * permanente se o cursor parar em cima.
+ */
+---
+
+<script>
+	function initFly() {
+		const alvos = document.querySelectorAll<HTMLElement>('[data-fly]');
+		if (!alvos.length) return;
+		if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+		for (const alvo of alvos) {
+			const letras = Array.from(alvo.querySelectorAll<HTMLElement>('.fly__c'));
+			if (!letras.length) continue;
+
+			const spread = Number(alvo.dataset.flySpread ?? 190);
+			const dur = Number(alvo.dataset.flyDuration ?? 480);
+			let voando = false;
+			let voltar: number | null = null;
+
+			const soltar = () => {
+				if (voando) return;
+				voando = true;
+				if (voltar !== null) clearTimeout(voltar);
+
+				// só agora as letras viram inline-block (transform não funciona
+				// em inline). No repouso ficam inline, com o kerning da fonte.
+				alvo.classList.add('is-active');
+				// força o reflow para o navegador não agrupar a troca de display
+				// com os transforms — sem isso a primeira animação sai sem transição
+				void alvo.offsetWidth;
+
+				letras.forEach((el, i) => {
+					// direção aleatória em círculo, com distância variando por letra
+					const ang = Math.random() * Math.PI * 2;
+					const dist = spread * (0.35 + Math.random() * 0.65);
+					const tx = Math.cos(ang) * dist;
+					const ty = Math.sin(ang) * dist * 0.75; // achata na vertical
+					const rot = (Math.random() - 0.5) * 120;
+					const sc = 0.7 + Math.random() * 0.5;
+
+					el.style.setProperty('--dur', `${dur}ms`);
+					el.style.transitionDelay = `${i * 14}ms`;
+					el.style.setProperty('--tx', `${tx.toFixed(1)}px`);
+					el.style.setProperty('--ty', `${ty.toFixed(1)}px`);
+					el.style.setProperty('--rot', `${rot.toFixed(1)}deg`);
+					el.style.setProperty('--sc', sc.toFixed(2));
+					el.style.opacity = '0.35';
+				});
+
+				// depois de voar, cada letra volta para casa
+				const idaTotal = dur + letras.length * 14;
+				voltar = window.setTimeout(() => {
+					letras.forEach((el, i) => {
+						// a volta é mais lenta e com easing elástico (definido no CSS)
+						el.style.setProperty('--dur', `${Math.round(dur * 1.8)}ms`);
+						el.style.transitionDelay = `${i * 18}ms`;
+						el.style.setProperty('--tx', '0px');
+						el.style.setProperty('--ty', '0px');
+						el.style.setProperty('--rot', '0deg');
+						el.style.setProperty('--sc', '1');
+						el.style.opacity = '1';
+					});
+					const voltaTotal = dur * 1.8 + letras.length * 18;
+					window.setTimeout(() => {
+						voando = false;
+						// volta ao display inline: o texto readquire o kerning correto
+						alvo.classList.remove('is-active');
+						letras.forEach((el) => {
+							el.style.transitionDelay = '';
+							el.style.opacity = '';
+						});
+					}, voltaTotal);
+				}, idaTotal * 0.55);
+			};
+
+			alvo.addEventListener('mouseenter', soltar);
+			alvo.addEventListener('focus', soltar);
+			alvo.addEventListener('touchstart', soltar, { passive: true });
+		}
+	}
+
+	initFly();
+	document.addEventListener('astro:after-swap', initFly);
+</script>

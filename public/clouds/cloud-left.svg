@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1400" preserveAspectRatio="none" fill="none" aria-hidden="true">
+  <defs>
+    <linearGradient id="gleft" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#f7fafe"/>
+      <stop offset="60%" stop-color="#e6ecf7"/>
+      <stop offset="100%" stop-color="#ccd8ec"/>
+    </linearGradient>
+    <filter id="bleft" x="-15%" y="-10%" width="130%" height="120%">
+      <feGaussianBlur stdDeviation="5"/>
+    </filter>
+  </defs>
+  <g filter="url(#bleft)" fill="url(#gleft)">
+    <rect x="-40" y="-40" width="508" height="1480"/>
+    <circle cx="567" cy="-60" r="167"/>
+    <circle cx="638" cy="-14" r="159"/>
+    <circle cx="577" cy="32" r="170"/>
+    <circle cx="517" cy="78" r="163"/>
+    <circle cx="596" cy="124" r="188"/>
+    <circle cx="495" cy="170" r="144"/>
+    <circle cx="494" cy="216" r="190"/>
+    <circle cx="605" cy="262" r="121"/>
+    <circle cx="646" cy="308" r="204"/>
+    <circle cx="599" cy="355" r="172"/>
+    <circle cx="511" cy="401" r="118"/>
+    <circle cx="580" cy="447" r="122"/>
+    <circle cx="518" cy="493" r="139"/>
+    <circle cx="475" cy="539" r="159"/>
+    <circle cx="565" cy="585" r="193"/>
+    <circle cx="578" cy="631" r="175"/>
+    <circle cx="575" cy="677" r="177"/>
+    <circle cx="568" cy="723" r="142"/>
+    <circle cx="648" cy="769" r="207"/>
+    <circle cx="626" cy="815" r="181"/>
+    <circle cx="543" cy="861" r="138"/>
+    <circle cx="538" cy="907" r="123"/>
+    <circle cx="616" cy="953" r="153"/>
+    <circle cx="627" cy="999" r="152"/>
+    <circle cx="642" cy="1045" r="193"/>
+    <circle cx="460" cy="1092" r="136"/>
+    <circle cx="636" cy="1138" r="159"/>
+    <circle cx="645" cy="1184" r="153"/>
+    <circle cx="489" cy="1230" r="174"/>
+    <circle cx="618" cy="1276" r="141"/>
+    <circle cx="493" cy="1322" r="147"/>
+    <circle cx="643" cy="1368" r="185"/>
+    <circle cx="501" cy="1414" r="139"/>
+    <circle cx="497" cy="1460" r="122"/>
+    <circle cx="216" cy="-40" r="216"/>
+    <circle cx="216" cy="52" r="160"/>
+    <circle cx="216" cy="145" r="194"/>
+    <circle cx="216" cy="238" r="184"/>
+    <circle cx="216" cy="330" r="161"/>
+    <circle cx="216" cy="422" r="210"/>
+    <circle cx="216" cy="515" r="156"/>
+    <circle cx="216" cy="608" r="202"/>
+    <circle cx="216" cy="700" r="154"/>
+    <circle cx="216" cy="792" r="182"/>
+    <circle cx="216" cy="885" r="163"/>
+    <circle cx="216" cy="978" r="168"/>
+    <circle cx="216" cy="1070" r="231"/>
+    <circle cx="216" cy="1162" r="216"/>
+    <circle cx="216" cy="1255" r="171"/>
+    <circle cx="216" cy="1348" r="224"/>
+    <circle cx="216" cy="1440" r="163"/>
+  </g>
+</svg>

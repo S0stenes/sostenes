@@ -1,0 +1,33 @@
+---
+import SocialIcon from './SocialIcon.astro';
+import { socials, footer } from '../data/site';
+---
+
+<section id="contact" class="relative z-10 px-6 pt-24 pb-16">
+	<ul class="flex flex-wrap items-center justify-center gap-6 sm:gap-12">
+		{
+			socials.map((social, i) => (
+				// cada ícone flutua com defasagem e duração levemente diferentes,
+				// para o conjunto não subir e descer em bloco
+				<li
+					class="float"
+					style={`--float-dur: ${5.4 + i * 0.5}s; --float-dist: 9px; --float-delay: ${i * 0.42}s;`}
+				>
+					<a
+						href={social.href}
+						target="_blank"
+						rel="noopener noreferrer"
+						class="flex size-12 items-center justify-center text-graphite-900 transition-opacity hover:opacity-60"
+					>
+						<SocialIcon icon={social.icon} class="size-8 sm:size-9" />
+						<span class="sr-only">{social.label}</span>
+					</a>
+				</li>
+			))
+		}
+	</ul>
+</section>
+
+<footer class="relative z-10 px-6 pb-12 text-center">
+	<p class="text-[1.05rem] text-graphite-700">{footer.text}</p>
+</footer>

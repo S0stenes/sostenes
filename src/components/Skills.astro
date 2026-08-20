@@ -1,0 +1,44 @@
+---
+import FlyingText from './FlyingText.astro';
+import { skills } from '../data/site';
+---
+
+<!-- overflow-x-clip: as letras voam para os lados sem criar barra de rolagem -->
+<section
+	id="skills"
+	class="relative z-10 overflow-x-clip px-5 py-20 text-center sm:px-6 sm:py-24"
+>
+	<FlyingText
+		as="h2"
+		text={skills.title}
+		spread={210}
+		class="title-caps text-[0.95rem] text-graphite-900 sm:text-[1.05rem]"
+	/>
+
+	{
+		skills.groups.map((group) => (
+			<div class="mt-8 sm:mt-9">
+				<FlyingText
+					as="h3"
+					text={group.label}
+					spread={170}
+					class="text-[1rem] font-semibold text-graphite-900 sm:text-[1.05rem]"
+				/>
+
+				<ul class="mt-4 space-y-2 sm:mt-5 sm:space-y-1.5">
+					{group.items.map((item) => (
+						<li class="text-[0.98rem] text-graphite-700 sm:text-[1.02rem]">
+							<span
+								class="mr-2 font-mono text-[0.86rem] font-semibold text-graphite-900"
+								aria-hidden="true"
+							>
+								&lt;/&gt;
+							</span>
+							<FlyingText text={item} spread={200} />
+						</li>
+					))}
+				</ul>
+			</div>
+		))
+	}
+</section>
